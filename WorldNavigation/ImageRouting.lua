@@ -5,6 +5,9 @@ function N:RegisterImageMap(pack)
  self.imageMaps=self.imageMaps or {};self.imageMaps[#self.imageMaps+1]=pack;return true
 end
 function N:ImagePlan(from,to,tick)
+ if not CreateVector2D or not C_Map or not C_Map.GetMapPosFromWorldPos or not C_Map.GetWorldPosFromMapPos then return nil,'Native map projection APIs are unavailable.'end
+ if not CreateVector2D or not C_Map or not C_Map.GetMapPosFromWorldPos or not C_Map.GetWorldPosFromMapPos then return nil,'Native map projection APIs are unavailable.'end
+ if not CreateVector2D or not C_Map or not C_Map.GetMapPosFromWorldPos or not C_Map.GetWorldPosFromMapPos then return nil,'Native map projection APIs are unavailable.'end
  if not self:Location(from)or not self:Location(to)or from.map~=to.map then return end
  local function project(p,map)
   local id,pos=self:Read(C_Map and C_Map.GetMapPosFromWorldPos,p.map,CreateVector2D(p.x,p.y),map)
@@ -68,17 +71,19 @@ function N:ImagePlan(from,to,tick)
        local points={self:Copy(from)}
        local function append(p)
         local a=points[#points];local dx,dy=p.x-a.x,p.y-a.y;local steps=math.max(1,math.ceil(math.sqrt(dx*dx+dy*dy)/4))
+        if #points+steps>20000 then return false end
         for i=1,steps do if tick then tick()end;points[#points+1]={x=a.x+dx*i/steps,y=a.y+dy*i/steps,map=p.map}end
+        return true
        end
        for index=#ids-1,2,-1 do
         local c=ids[index];local x=((c-1)%w+.5)/w;local y=(math.floor((c-1)/w)+.5)/h
         local continent,pos=self:Read(C_Map and C_Map.GetWorldPosFromMapPos,map,CreateVector2D(x,y))
         if continent~=from.map or not pos then return nil,'Map image cannot be aligned to this continent.'end
         local wx,wy=self:Read(pos.GetXY,pos);if not self:Finite(wx)or not self:Finite(wy)then return end
-        append({x=wx,y=wy,map=continent})
+        if not append({x=wx,y=wy,map=continent})then return nil,'Image route exceeds point budget.'end
         if #points>20000 then return nil,'Image route exceeds point budget.'end
        end
-       append(to)
+       if not append(to)then return nil,'Image route exceeds point budget.'end
        return {points=points,cost=costs[goal],imageBased=true,terrainVerified=false,source=pack.name..' map-image estimate; roads/texture weights, elevation unknown'}
       end
       if not closed[id]then

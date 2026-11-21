@@ -25,6 +25,16 @@ function N:DB()
  if type(db.graph)~='table'then db.graph={nodes={},edges={}}end
  if type(db.hazards)~='table'then db.hazards={}end
  if type(db.blocks)~='table'then db.blocks={}end
+ -- Repair stale/malformed local records once per realm table, never during every edge visit.
+ if not self.validatedDB or not self.validatedDB[db]then
+  self.validatedDB=self.validatedDB or setmetatable({},{__mode='k'})
+  local hazards,blocks={},{}
+  for k,h in pairs(db.hazards)do
+   if type(h)=='table'and self:Location(h)and self:Finite(h.radius)and h.radius>0 and h.radius<=1000 and self:Finite(h.expires)and h.expires>=0 and (h.maxMob==nil or self:Finite(h.maxMob)and h.maxMob>=0)then hazards[k]=h end
+  end
+  for _,b in ipairs(db.blocks)do if #blocks<200 and type(b)=='table'and self:Location(b)and self:Finite(b.radius)and b.radius>0 and b.radius<=1000 then blocks[#blocks+1]=b end end
+  db.hazards,db.blocks=hazards,blocks;self.validatedDB[db]=true
+ end
  return root.realms[key]
 end
 function N:Validate(g,tick)

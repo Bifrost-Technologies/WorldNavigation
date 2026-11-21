@@ -26,7 +26,9 @@ function N:TerrainRoute(from,to,callback)
  if C_Timer and C_Timer.After then C_Timer.After(30,function()
   if not cancelled and not finished then for _,job in ipairs(jobs)do pcall(engine.Cancel,job)end;finish(nil,'Terrain search timed out; try a nearer recorded approach.')end
  end)end
- local function find(a,b,done)
+ local function find(a,b,complete)
+  local delivered=false
+  local function done(...)if delivered or cancelled or finished then return end;delivered=true;complete(...)end
   local ok,job=pcall(engine.Find,a.map,a,b,function(points,cost)
    if cancelled or finished then return end
    if type(points)~='table'or #points<2 or #points>20000 then done(nil,'Terrain route unavailable: '..tostring(cost));return end

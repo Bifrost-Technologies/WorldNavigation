@@ -1,13 +1,7 @@
-# Automatic packaging — World Navigation
+# Automatic public addon packaging
 
-Client: Forever WoW 1.60.1 / Interface 16001. Current source version: 0.1.0-beta.5.
+Default-branch pushes and manual workflow runs build a manifest-only install ZIP, submit it to CurseForge, and publish the ZIP/checksum as a GitHub prerelease. Matching version tags use the addon's declared release type. Other branch pushes only build an Actions artifact.
 
-GitHub website → repository Settings → Secrets and variables → Actions:
+Set secret CF_API_TOKEN and variable CF_PROJECT_ID. Optional CF_GAME_VERSION_IDS accepts actual CurseForge version IDs; when unset, gameVersionNames selects 1.60.1. WoW Interface 16001 is handled as a client interface number, not sent as a CurseForge version ID. Missing upload credentials fail the upload step explicitly. A successful submission records the CurseForge file ID in the run summary and dist/*.upload.json. CurseForge moderation is separate from submission.
 
-- Secret CF_API_TOKEN: your CurseForge author upload token.
-- Variable CF_PROJECT_ID: this project's numeric ID.
-- Variable CF_GAME_VERSION_IDS: actual supported CurseForge version IDs, comma-separated. No client version is guessed.
-
-Pushes package an artifact. Default-branch pushes can upload Alpha files when configured. Tags matching v<TOC-version> use the version's Alpha/Beta/Release type. Missing credentials keep packaging local to Actions; missing/invalid game version IDs stop upload. Four newly initialized repositories may still need publishing and a remote. No remote setup or upload was performed here.
-
-See release.md for the complete publishing form and runtime limitations. Do not upload source-repository ZIPs, private helpers or development reports.
+Only declared addon files and public README/license/changelog/art assets enter install ZIPs. Private toolkit and UberAdmin folders are excluded. The workflow never packages the entire repository.

@@ -1,6 +1,9 @@
 -- Cross-zone search over the union of native-georeferenced image rasters.
 local N=WorldNavigation
 function N:MultiImagePlan(from,to,tick)
+ if not CreateVector2D or not C_Map or not C_Map.GetWorldPosFromMapPos then return nil,'Native map projection APIs are unavailable.'end
+ if not CreateVector2D or not C_Map or not C_Map.GetWorldPosFromMapPos then return nil,'Native map projection APIs are unavailable.'end
+ if not CreateVector2D or not C_Map or not C_Map.GetWorldPosFromMapPos then return nil,'Native map projection APIs are unavailable.'end
  if not self:Location(from)or not self:Location(to)or from.map~=to.map then return nil,'Endpoints are on different continents.'end
  local packs={}
  local function world(map,x,y)
@@ -82,10 +85,12 @@ function N:MultiImagePlan(from,to,tick)
     local points={self:Copy(from)}
     local function append(x,y)
      local a=points[#points];local dx,dy=x-a.x,y-a.y;local count=math.max(1,math.ceil(math.sqrt(dx*dx+dy*dy)/4))
+     if #points+count>20000 then return false end
      for i=1,count do if tick then tick()end;points[#points+1]={x=a.x+dx*i/count,y=a.y+dy*i/count,map=from.map}end
+     return true
     end
-    for i=#reverse-1,1,-1 do local x,y=coords(reverse[i]);append(from.x+x*step,from.y+y*step)end
-    append(to.x,to.y)
+    for i=#reverse-1,1,-1 do local x,y=coords(reverse[i]);if not append(from.x+x*step,from.y+y*step)then return nil,'Image route exceeds point budget.'end end
+    if not append(to.x,to.y)then return nil,'Image route exceeds point budget.'end
     return {points=points,cost=distance[goal],imageBased=true,terrainVerified=false,source='Cross-zone map-image estimate; native alignment, road/texture weights, elevation unknown'}
    end
    local x,y=coords(key)
