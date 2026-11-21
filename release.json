@@ -1,0 +1,7 @@
+{
+  "name": "WorldNavigation",
+  "primary": "WorldNavigation",
+  "addons": [
+    "WorldNavigation"
+  ]
+}

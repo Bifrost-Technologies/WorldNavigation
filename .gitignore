@@ -1,0 +1,10 @@
+dist/
+__pycache__/
+.env
+.env.*
+*.exe
+*.pdb
+
+!/docs/FEATURE-AUDIT-2026-11-20.json
+
+!/docs/FEATURE-AUDIT-2026-11-20.json

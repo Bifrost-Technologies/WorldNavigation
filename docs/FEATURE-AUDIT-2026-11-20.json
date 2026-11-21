@@ -1,0 +1,83 @@
+{
+  "date": "2026-11-20",
+  "scope": "Public addon source audit; no behavioral certification.",
+  "testsRun": false,
+  "liveGameplayRun": false,
+  "fixes": [
+    {
+      "feature": "Image-route risk weighting",
+      "files": [
+        "../WorldNavigation/ImageRouting.lua"
+      ],
+      "change": "Known no-pass areas block cells and observed mobs penalize cells during A*, with pixel footprint inflation."
+    },
+    {
+      "feature": "Summon WHO scope",
+      "files": [
+        "../Uber/SummonHelpers.lua"
+      ],
+      "change": "Uses native z- query syntax and verifies the submitted WHO query before accepting town-area rows in region mode; otherwise exact-area fallback is explicit."
+    },
+    {
+      "feature": "Booking scope freshness",
+      "files": [
+        "../Uber/RealmScope.lua"
+      ],
+      "change": "Saved realm/faction advertisements expire after 90 seconds; unconfirmed scope cannot authorize booking."
+    },
+    {
+      "feature": "Profession guild import",
+      "files": [
+        "../LookingForProfession/Core.lua"
+      ],
+      "change": "Native numeric offline value 0 is no longer treated as online."
+    }
+  ],
+  "remaining": [
+    {
+      "feature": "Map road/cliff recognition",
+      "status": "Heuristic image weights exist. No measured semantic segmentation accuracy, verified collision map or inferred heightmap exists."
+    },
+    {
+      "feature": "Dungeon map navigation",
+      "status": "17 image templates acquired; native floor bindings are absent. They are not routed as verified dungeon floors."
+    },
+    {
+      "feature": "Phase detection and quota",
+      "status": "Manual layer labels and local invite-attempt cooldown only; no verified layer identification, successful-swap counter or server remaining quota."
+    },
+    {
+      "feature": "Global driver discovery",
+      "status": "Native channels and known records only. No all-realm/all-faction directory feed exists."
+    },
+    {
+      "feature": "Professions/recipes",
+      "status": "Manually confirmed profession records and local observed recipes only; no remote profession inspection or complete scraped recipe catalogue."
+    },
+    {
+      "feature": "Automatic packaging",
+      "status": "Local packaging and workflow source exist. Remote workflow activation, credentials, project/version configuration and an actual successful CurseForge upload are not verified."
+    },
+    {
+      "feature": "Client map-image parity",
+      "status": "Downloaded artwork is standard Classic imagery, not an extraction of this exact Forever build. Native texture inventory is implemented, but build-specific texture extraction and alignment verification are not."
+    },
+    {
+      "feature": "Minimap route drawing",
+      "status": "Minimap launcher and marker/path toggles exist; route lines are drawn on the world map, not on the minimap."
+    },
+    {
+      "feature": "Universal visual theme",
+      "status": "Cyan/dark-gray styling exists in custom panels and auction gold headers. A full reskin and visual review of all default Blizzard button templates has not been completed."
+    },
+    {
+      "feature": "Installed versus loaded",
+      "status": "Installer copies and hashes files, but this does not prove the addons loaded in the running client. Newly added addon folders require a full game restart if not previously discovered."
+    }
+  ],
+  "sourceSyntaxReview": {
+    "filesParsed": 116,
+    "syntaxErrors": 0,
+    "executedAddonCode": false
+  }
+}

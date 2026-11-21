@@ -1,0 +1,18 @@
+## Interface: 16001
+## Title: World Navigation
+## Notes: Automatic terrain and road routing for flight guidance. /wnav
+## Author: Tranquility Guild
+## Version: 0.1.0-beta.5
+## OptionalDeps: Polestar
+## SavedVariables: WorldNavigationDB
+## X-License: MIT
+
+WorldNavigation.lua
+Terrain.lua
+Status.lua
+
+ImageRouting.lua
+ImageMaps.lua
+MapArtwork.lua
+
+CrossZoneRouting.lua
