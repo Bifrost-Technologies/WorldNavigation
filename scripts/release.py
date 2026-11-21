@@ -60,6 +60,12 @@ def package(root, env):
             key = addon + '/' + filename
             if key in entries: raise ValueError('Duplicate addon path: ' + key)
             entries[key] = path
+        if addon + '/LICENSE' not in entries:
+            license_file = next((p.resolve() for p in (source.parent / 'LICENSE', root / 'LICENSE')
+                                 if p.is_file() and p.resolve().is_relative_to(root)), None)
+            if license_file: entries[addon + '/LICENSE'] = license_file
+            elif re.search(r'^## X-License:\s*MIT\s*$', manifest, re.M):
+                raise ValueError('MIT license text missing from public distribution: ' + addon)
     out = root / 'dist'
     out.mkdir(exist_ok=True)
     archive = out / (name + '-' + label + '.zip')
