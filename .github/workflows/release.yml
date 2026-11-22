@@ -42,12 +42,14 @@ jobs:
           RELEASE_TAG: ${{ steps.package.outputs.tag }}
           ARCHIVE: ${{ steps.package.outputs.archive }}
           CHECKSUM: ${{ steps.package.outputs.checksum }}
+          RELEASE_TYPE: ${{ steps.package.outputs.release_type }}
         shell: bash
         run: |
+          flags=(--prerelease --latest=false)
+          if [[ "$RELEASE_TYPE" == release ]]; then flags=(--prerelease=false --latest); fi
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
             gh release upload "$RELEASE_TAG" "$ARCHIVE" "$CHECKSUM" --clobber
+            gh release edit "$RELEASE_TAG" "${flags[@]}"
           else
-            flags=()
-            if [[ "$GITHUB_REF" != refs/tags/* || "$RELEASE_TAG" == *beta* || "$RELEASE_TAG" == *alpha* ]]; then flags+=(--prerelease); fi
             gh release create "$RELEASE_TAG" "$ARCHIVE" "$CHECKSUM" --target "$GITHUB_SHA" --title "$RELEASE_TAG" --notes "Installable addon ZIP and SHA-256 checksum. Source: $GITHUB_SHA. Submitted to CurseForge; moderation may still be pending." "${flags[@]}"
           fi

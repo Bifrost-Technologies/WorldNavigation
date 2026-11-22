@@ -80,13 +80,18 @@ def package(root, env):
     print('Prepared ' + archive.name + ' (' + str(len(entries)) + ' files)')
     return archive, cfg, version, label
 
+def release_type(version):
+    # Release channel follows the declared version, not whether a push used a tag.
+    if '-' not in version:
+        return 'release'
+    return 'beta' if version.split('-', 1)[1].lower().startswith('beta') else 'alpha'
+
 def upload(archive, cfg, version, label, env):
     token = env.get('CF_API_TOKEN', '').strip()
     project = env.get('CF_PROJECT_ID', '').strip()
     if not token: raise ValueError('Missing repository secret CF_API_TOKEN; upload was NOT performed')
     if not re.fullmatch(r'[1-9][0-9]*', project): raise ValueError('CF_PROJECT_ID must be the numeric CurseForge project ID')
-    release_type = 'alpha' if not env.get('GITHUB_REF', '').startswith('refs/tags/') or 'alpha' in version else 'beta' if 'beta' in version else 'release'
-    metadata = {'displayName': cfg['name'] + ' ' + label, 'releaseType': release_type,
+    metadata = {'displayName': cfg['name'] + ' ' + label, 'releaseType': release_type(version),
         'changelogType': 'text', 'changelog': 'Source commit ' + env.get('GITHUB_SHA', 'local') + '. See bundled changelog and README.'}
     ids = env.get('CF_GAME_VERSION_IDS', '').strip()
     # 16001 is the WoW TOC Interface number, not a CurseForge version ID.
@@ -129,7 +134,7 @@ def main():
         archive, cfg, version, label = package(args.root, os.environ)
         if os.environ.get('GITHUB_OUTPUT'):
             with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as f:
-                f.write('archive=' + str(archive) + '\nchecksum=' + str(archive.with_suffix('.zip.sha256')) + '\ntag=v' + label + '\n')
+                f.write('archive=' + str(archive) + '\nchecksum=' + str(archive.with_suffix('.zip.sha256')) + '\ntag=v' + label + '\nrelease_type=' + release_type(version) + '\n')
         if args.upload: upload(archive, cfg, version, label, os.environ)
     except (ValueError, OSError, KeyError, urllib.error.URLError) as error:
         print('::error::' + str(error), file=sys.stderr)

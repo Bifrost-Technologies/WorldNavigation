@@ -2,7 +2,7 @@
 ## Title: World Navigation
 ## Notes: Automatic terrain and road routing for flight guidance. /wnav
 ## Author: Tranquility Guild
-## Version: 0.1.0-beta.6
+## Version: 0.1.0
 ## OptionalDeps: Polestar
 ## SavedVariables: WorldNavigationDB
 ## X-License: MIT
